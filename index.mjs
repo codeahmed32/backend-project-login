@@ -10,14 +10,26 @@ import { signJWT } from "./Utils/JWT.mjs";
 
 dotenv.config();
 const app = express();
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://login-ecommerce-app.netlify.app" // Apna Netlify ka sahi link yahan lazmi dalein
+];
+
 app.use(cors({
-    origin: [
-        "https://login-ecommerce-app.netlify.app",
-        "http://localhost:5173",
-        "http://localhost:5050",
-    ],
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS Policy: This origin is not allowed'));
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
 
