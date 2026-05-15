@@ -6,11 +6,15 @@ import dotenv from "dotenv";
 import encryptjs from "encryptjs";
 import User from "./models/User.mjs";
 import { signJWT } from "./Utils/JWT.mjs";
+
+
 dotenv.config();
 const app = express();
 app.use(cors({
     origin: [
-        "http://localhost:5173/",
+        "https://login-ecommerce-app.netlify.app",
+        "http://localhost:5173",
+        "http://localhost:5050",
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true
@@ -53,7 +57,8 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ message: "Server Error", error: err.message });
     }
 });
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
+
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server is live on port ${PORT}`);
 });
