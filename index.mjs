@@ -10,10 +10,8 @@ import { signJWT } from "./Utils/JWT.mjs";
 
 dotenv.config();
 const app = express();
-const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://login-ecommerce-app.netlify.app" // Apna Netlify ka sahi link yahan lazmi dalein
+const Origins = [
+    "*" 
 ];
 
 app.use(cors({
