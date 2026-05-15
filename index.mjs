@@ -20,6 +20,13 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+
+
+
+app.get("/", (req, res) => {
+    res.send("🚀 Backend is up and running!");
+});
+
 const P_SECRET = process.env.PASSWORD_SECRET || "my_super_secret_key";
 mongoose.connect(process.env.MONGO_DB_URI)
     .then(() => console.log(" MongoDB Connected"))
