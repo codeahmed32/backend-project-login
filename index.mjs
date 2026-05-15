@@ -32,24 +32,14 @@ mongoose.connect(process.env.MONGO_DB_URI)
     .catch(err => console.error("❌ DB Error:", err));
 
 // Signup Route
-app.post("/signup", async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        if (!username || !password) {
-            return res.status(400).json({ message: "Username and Password are required" });
-        }
-        
-        const encryptedPassword = encryptjs.encrypt(password, P_SECRET, 256);
-        const newUser = new User({
-            username,
-            password: encryptedPassword
-        });
-        await newUser.save();
-        res.status(201).json({ message: "User Registered Successfully!" });
-    } catch (err) {
-        console.error("Signup Error:", err);
-        res.status(500).json({ message: "Error in Signup", error: err.message });
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
     }
+    next();
 });
 
 // Login Route
