@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin: "*",
+    origin: "https://login-ecommerce-app.netlify.app",
     methods: ["GET", "POST", "DELETE", "UPDATE"],
     credentials: true
 }));
