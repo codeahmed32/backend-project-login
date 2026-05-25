@@ -38,14 +38,12 @@ app.get("/verify", async (req, res) => {
 
         const token = authHeader.split(" ")[1];
         
-        // Verifying using the exact same configuration token signature
         const decoded = jwt.verify(token, JWT_SECRET);
         
         if (!decoded || !decoded.id) {
             return res.status(401).json({ message: "Invalid Session State Credentials" });
         }
 
-        // Fetch user from DB, exclude password
         const user = await User.findById(decoded.id).select("-password");
         if (!user) {
             return res.status(404).json({ message: "User identity does not exist in registry" });
