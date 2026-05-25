@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import encryptjs from "encryptjs";
 import User from "./models/User.mjs";
 import { signJWT } from "./Utils/JWT.mjs";
-import jwt from "jsonwebtoken"; // Ensure jsonwebtoken is imported for direct verification if needed
+import jwt from "jsonwebtoken"; 
 
 dotenv.config();
 const app = express();
@@ -22,15 +22,13 @@ app.get("/", (req, res) => {
 });
 
 const P_SECRET = process.env.PASSWORD_SECRET || "my_super_secret_key";
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key"; // Fallback secret for parsing verification operations
+const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_key"; 
 
 mongoose.connect(process.env.MONGO_DB_URI)
-    .then(() => console.log(" MongoDB Connected"))
-    .catch(err => console.error(" DB Error:", err));
+    .then(() => console.log("📦 MongoDB Connected"))
+    .catch(err => console.error("❌ DB Error:", err));
 
-// ==========================================
-// NEWLY ADDED SECURE VERIFICATION ROUTE
-// ==========================================
+
 app.get("/verify", async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -40,24 +38,23 @@ app.get("/verify", async (req, res) => {
 
         const token = authHeader.split(" ")[1];
         
-        // Decoding the token to resolve session state strings
-        // database verification triggers using environment sign hashes
+        // Verifying using the exact same configuration token signature
         const decoded = jwt.verify(token, JWT_SECRET);
         
-        if (!decoded) {
+        if (!decoded || !decoded.id) {
             return res.status(401).json({ message: "Invalid Session State Credentials" });
         }
 
-        // Fetching the user context context parameters mapping directly to client layout without password
+        // Fetch user from DB, exclude password
         const user = await User.findById(decoded.id).select("-password");
         if (!user) {
-            return res.status(404).json({ message: "Operational Context Profile Identity Dead" });
+            return res.status(404).json({ message: "User identity does not exist in registry" });
         }
 
         res.status(200).json({ user });
     } catch (err) {
-        console.error("Session Identity Crash Trace:", err);
-        res.status(401).json({ message: "Session authorization sequence expired or corrupted", error: err.message });
+        console.error("Session Identity Crash Trace:", err.message);
+        res.status(401).json({ message: "Session expired or verification token corrupted", error: err.message });
     }
 });
 
